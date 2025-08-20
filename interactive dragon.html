@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Dragon</title>
+
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    svg {
+      width: 80%;
+      height: auto;
+      background: #fff;
+      border: 2px solid black;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Dragon head hai yeh-->
+    <circle cx="400" cy="300" r="200" fill="lightgreen" stroke="black" stroke-width="3"/>
+
+    <!-- aakhe hai yeh -->
+    <circle cx="330" cy="250" r="20" fill="white"/>
+    <circle id="leftEye" cx="330" cy="250" r="8" fill="black"/>
+
+    <circle cx="470" cy="250" r="20" fill="white"/>
+    <circle id="rightEye" cx="470" cy="250" r="8" fill="black"/>
+
+    <!--Mouth ki jagah hai -->
+    <path d="M 350 400 Q 400 450 450 400" stroke="black" stroke-width="5" fill="transparent"/>
+  </svg>
+
+  <script>
+    const svg = document.querySelector("svg");
+    const leftEye = document.getElementById("leftEye");
+    const rightEye = document.getElementById("rightEye");
+
+    // Eye center positions
+    const leftCenter = { x: 330, y: 250 };
+    const rightCenter = { x: 470, y: 250 };
+    const eyeRadius = 20;      // white eye radius
+    const pupilRadius = 8;     // black pupil radius
+    const maxOffset = eyeRadius - pupilRadius - 2; // keep pupil inside eye
+
+    window.addEventListener("mousemove", (event) => {
+      const pt = svg.createSVGPoint();
+      pt.x = event.clientX;
+      pt.y = event.clientY;
+      const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+      
+      movePupil(leftEye, leftCenter, svgP, maxOffset);
+      movePupil(rightEye, rightCenter, svgP, maxOffset);
+    });
+
+    function movePupil(pupil, center, target, maxOffset) {
+      let dx = target.x - center.x;
+      let dy = target.y - center.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > maxOffset) {
+        dx = dx / dist * maxOffset;
+        dy = dy / dist * maxOffset;
+      }
+      pupil.setAttribute("cx", center.x + dx);
+      pupil.setAttribute("cy", center.y + dy);
+    }
+  </script>
+</body>
+</html>
